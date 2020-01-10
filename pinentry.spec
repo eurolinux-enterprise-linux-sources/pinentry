@@ -5,12 +5,12 @@
 %define qt3 qt3
 %else
 %define qt3 qt
-%define _enable_pinentry_qt --enable-pinentry-qt 
+%define _enable_pinentry_qt --enable-pinentry-qt
 %endif
 
 Name:    pinentry
 Version: 0.7.6
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Collection of simple PIN or passphrase entry dialogs
 
 Group:   Applications/System
@@ -106,8 +106,9 @@ unset QTDIR || : ; . /etc/profile.d/qt.sh
   --disable-rpath \
   --disable-dependency-tracking \
   --disable-pinentry-gtk \
+  --without-libcap \
   %{?_enable_pinentry_qt} %{!?_enable_pinentry_qt:--disable-pinentry-qt} \
-  %{?_enable_pinentry_qt4} %{!?_enable_pinentry_qt4:--disable-pinentry-qt4} 
+  %{?_enable_pinentry_qt4} %{!?_enable_pinentry_qt4:--disable-pinentry-qt4}
 
 make %{?_smp_mflags}
 
@@ -171,6 +172,10 @@ fi
 
 
 %changelog
+* Thu Jun 30 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.7.6-6
+- disable libcap support
+- Resolves: rhbz#677665
+
 * Sun Apr 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-5
 - pinentry-gtk -g segfaults on focus change (#520236)
 
@@ -230,7 +235,7 @@ fi
 * Wed Aug 09 2006 Rex Dieter <rexdieter[AT]users.sf.net> - 0.7.2-2
 - fc6 respin
 
-* Wed Mar 01 2006 Rex Dieter <rexdieter[AT]users.sf.net> 
+* Wed Mar 01 2006 Rex Dieter <rexdieter[AT]users.sf.net>
 - fc5: gcc/glibc respin
 
 * Tue Oct 18 2005 Ville Skyttä <ville.skytta at iki.fi> - 0.7.2-1
