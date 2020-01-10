@@ -10,7 +10,7 @@
 
 Name:    pinentry
 Version: 0.7.6
-Release: 6%{?dist}
+Release: 8%{?dist}
 Summary: Collection of simple PIN or passphrase entry dialogs
 
 Group:   Applications/System
@@ -25,8 +25,11 @@ Source10: pinentry-wrapper
 
 ## Upstreamable patches
 # from gpa-devel list, archives seem 404'd atm
-Patch50: 0001-Fix-pinentry-gtk-2-SIGSEGV-when-unfocusing-with-g-ar.patch
+Patch1: 0001-Fix-pinentry-gtk-2-SIGSEGV-when-unfocusing-with-g-ar.patch
+Patch2: 0002-Backport-of-Add-wide-char-support-to-pinentry-curses.patch
 
+BuildRequires: gettext-devel
+BuildRequires: autoconf, automake
 BuildRequires: gtk2-devel
 BuildRequires: libcap-devel
 BuildRequires: ncurses-devel
@@ -87,7 +90,11 @@ Support for Qt4 is new, and a bit experimental.
 %prep
 %setup -q
 
-%patch50 -p1 -b .rhbug_520236
+%patch1 -p1 -b .rhbug_520236
+%patch2 -p1
+
+# Patch 2 changed configure.ac, we need to regenerate configure script
+./autogen.sh
 
 # hack around auto* madness, lack of proper support for moc
 %if %{?_enable_pinentry_qt4:1}
@@ -172,6 +179,12 @@ fi
 
 
 %changelog
+* Thu Feb 26 2015 Boris Ranto <branto@redhat.com> - 0.7.6-8
+- Add unicode support to pinentry-curses (rhbz#704495)
+
+* Mon Feb 2 2015 Boris Ranto <branto@redhat.com> - 0.7.6-7
+- rewrite pinentry-wrapper script (#662770)
+
 * Thu Jun 30 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.7.6-6
 - disable libcap support
 - Resolves: rhbz#677665
@@ -179,10 +192,10 @@ fi
 * Sun Apr 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-5
 - pinentry-gtk -g segfaults on focus change (#520236)
 
-* Wed Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-4
+* Sun Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-4
 - Errors installing with --excludedocs (#515925)
 
-* Wed Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-3
+* Sun Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-3
 - drop alternatives, use app-wrapper instead (borrowed from opensuse)
 - -qt4 experimental subpkg, -qt includes qt3 version again  (#523488)
 
@@ -245,7 +258,7 @@ fi
 - Build with dependency tracking disabled.
 - Clean up obsolete pre-FC2 support.
 
-* Fri Apr  7 2005 Michael Schwendt <mschwendt[AT]users.sf.net> - 0.7.1-4
+* Thu Apr  7 2005 Michael Schwendt <mschwendt[AT]users.sf.net> - 0.7.1-4
 - rebuilt
 
 * Wed Jun 30 2004 Ville Skyttä <ville.skytta at iki.fi> - 0:0.7.1-0.fdr.3
@@ -269,7 +282,7 @@ fi
 * Sat Mar 22 2003 Ville Skyttä <ville.skytta at iki.fi> - 0:0.6.8-0.fdr.1
 - Update to current Fedora guidelines.
 
-* Tue Feb 12 2003 Warren Togami <warren@togami.com> 0.6.8-1.fedora.3
+* Wed Feb 12 2003 Warren Togami <warren@togami.com> 0.6.8-1.fedora.3
 - info/dir temporary workaround
 
 * Sat Feb  8 2003 Ville Skyttä <ville.skytta at iki.fi> - 0.6.8-1.fedora.1
