@@ -1,0 +1,39 @@
+From a3a81549ffb787410a694b6e29de6638588eaf88 Mon Sep 17 00:00:00 2001
+From: Stanislav Ochotnicky <sochotnicky@redhat.com>
+Date: Fri, 14 Feb 2014 12:58:38 +0100
+Subject: [PATCH] Check if we are on tty before initializing curses.
+
+* pinentry/pinentry-curses.c (dialog_run): Check stant stdin and stout
+are connected to ttys.
+
+--
+
+When we did not have a ttyname we just used stdin/out without checking
+if it's a proper TTY or a pipe. In some cases this can cause endless
+loop or escape seqeunces on the terminal.
+
+This commit changes behaviour so that if stdin/out is not tty and no
+ttyname is specified we error-out with errno set to ENOTTY
+---
+ pinentry/pinentry-curses.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/pinentry/pinentry-curses.c b/pinentry/pinentry-curses.c
+index 585059f..5482c15 100644
+--- a/pinentry/pinentry-curses.c
++++ b/pinentry/pinentry-curses.c
+@@ -746,6 +746,11 @@ dialog_run (pinentry_t pinentry, const char *tty_name, const char *tty_type)
+     {
+       if (!init_screen)
+ 	{
++          if (!(isatty(fileno(stdin)) && isatty(fileno(stdout))))
++            {
++              errno = ENOTTY;
++              return -1;
++            }
+ 	  init_screen = 1;
+ 	  initscr ();
+ 	}
+-- 
+2.5.0
+

@@ -17,7 +17,7 @@
 
 Name:    pinentry
 Version: 0.8.1
-Release: 10%{?dist}
+Release: 17%{?dist}
 Summary: Collection of simple PIN or passphrase entry dialogs
 
 Group:   Applications/System
@@ -34,6 +34,12 @@ Source10: pinentry-wrapper
 ## Patches not yet in SVN
 Patch53: 0001-Fix-qt4-pinentry-window-created-in-the-background.patch
 
+## Backported patches
+Patch200: 0001-Add-wide-char-support-to-pinentry-curses.patch
+Patch201: 0001-Check-if-we-are-on-tty-before-initializing-curses.patch
+
+BuildRequires: gettext-devel
+BuildRequires: autoconf, automake
 BuildRequires: gtk2-devel
 BuildRequires: libcap-devel
 BuildRequires: ncurses-devel
@@ -104,6 +110,11 @@ Support for Qt4 is new, and a bit experimental.
 %setup -q
 
 %patch53 -p1 -b .rhbug_589532
+%patch200 -p1
+%patch201 -p1
+
+# patch200 changes configure.ac so we need to regenerate
+./autogen.sh
 
 # hack around auto* madness, lack of proper support for moc
 %if %{?_enable_pinentry_qt4:1}
@@ -195,6 +206,32 @@ fi
 
 
 %changelog
+* Thu Mar 17 2016 Boris Ranto <branto@redhat.com> - 0.8.1-17
+- actually apply the previous patch in the spec file
+- resolves: rhbz#1058972
+
+* Fri Feb 19 2016 Boris Ranto <branto@redhat.com> - 0.8.1-16
+- curses: detect non-tty environment and exit gracefully
+- resolves: rhbz#1058972
+
+* Fri Feb 19 2016 Boris Ranto <branto@redhat.com> - 0.8.1-15
+- rewrite the pinentry-wrapper shell script to better handle corner cases
+- resolves: rhbz#1231229
+
+* Thu Jan 30 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.8.1-14
+- Add wide-char support to pinentry-curses
+- Resolves: rhbz#1059729
+
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 0.8.1-13
+- Mass rebuild 2014-01-24
+
+* Wed Jan 15 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.8.1-12
+- Provide final fallback to pinetry-curses
+- Resolves: #rhbz1002599
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.8.1-11
+- Mass rebuild 2013-12-27
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.8.1-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
@@ -239,10 +276,10 @@ fi
 * Sun Apr 18 2010 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-5
 - pinentry-gtk -g segfaults on focus change (#520236)
 
-* Wed Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-4
+* Sun Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-4
 - Errors installing with --excludedocs (#515925)
 
-* Wed Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-3
+* Sun Sep 13 2009 Rex Dieter <rdieter@fedoraproject.org> - 0.7.6-3
 - drop alternatives, use app-wrapper instead (borrowed from opensuse)
 - -qt4 experimental subpkg, -qt includes qt3 version again  (#523488)
 
@@ -305,7 +342,7 @@ fi
 - Build with dependency tracking disabled.
 - Clean up obsolete pre-FC2 support.
 
-* Fri Apr  7 2005 Michael Schwendt <mschwendt[AT]users.sf.net> - 0.7.1-4
+* Thu Apr  7 2005 Michael Schwendt <mschwendt[AT]users.sf.net> - 0.7.1-4
 - rebuilt
 
 * Wed Jun 30 2004 Ville Skyttä <ville.skytta at iki.fi> - 0:0.7.1-0.fdr.3
@@ -329,7 +366,7 @@ fi
 * Sat Mar 22 2003 Ville Skyttä <ville.skytta at iki.fi> - 0:0.6.8-0.fdr.1
 - Update to current Fedora guidelines.
 
-* Tue Feb 12 2003 Warren Togami <warren@togami.com> 0.6.8-1.fedora.3
+* Wed Feb 12 2003 Warren Togami <warren@togami.com> 0.6.8-1.fedora.3
 - info/dir temporary workaround
 
 * Sat Feb  8 2003 Ville Skyttä <ville.skytta at iki.fi> - 0.6.8-1.fedora.1
