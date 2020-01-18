@@ -17,7 +17,7 @@
 
 Name:    pinentry
 Version: 0.8.1
-Release: 10%{?dist}
+Release: 14%{?dist}
 Summary: Collection of simple PIN or passphrase entry dialogs
 
 Group:   Applications/System
@@ -34,6 +34,11 @@ Source10: pinentry-wrapper
 ## Patches not yet in SVN
 Patch53: 0001-Fix-qt4-pinentry-window-created-in-the-background.patch
 
+## Backported patches
+Patch200: 0001-Add-wide-char-support-to-pinentry-curses.patch
+
+BuildRequires: gettext-devel
+BuildRequires: autoconf, automake
 BuildRequires: gtk2-devel
 BuildRequires: libcap-devel
 BuildRequires: ncurses-devel
@@ -104,6 +109,10 @@ Support for Qt4 is new, and a bit experimental.
 %setup -q
 
 %patch53 -p1 -b .rhbug_589532
+%patch200 -p1
+
+# patch200 changes configure.ac so we need to regenerate
+./autogen.sh
 
 # hack around auto* madness, lack of proper support for moc
 %if %{?_enable_pinentry_qt4:1}
@@ -195,6 +204,20 @@ fi
 
 
 %changelog
+* Thu Jan 30 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.8.1-14
+- Add wide-char support to pinentry-curses
+- Resolves: rhbz#1059729
+
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 0.8.1-13
+- Mass rebuild 2014-01-24
+
+* Wed Jan 15 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.8.1-12
+- Provide final fallback to pinetry-curses
+- Resolves: #rhbz1002599
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.8.1-11
+- Mass rebuild 2013-12-27
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.8.1-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
